@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Basic colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <!-- Theme colors -->
+    <color name="primary">#0A2647</color> <!-- Updated -->
+    <color name="primaryDark">#144272</color> <!-- Updated -->
+    <color name="accent">#2C74B3</color> <!-- Updated -->
+    <color name="gray">#8CB9BD</color> <!-- Updated -->
+    <color name="light_gray">#B3C8CF</color> <!-- Updated -->
+</resources>
