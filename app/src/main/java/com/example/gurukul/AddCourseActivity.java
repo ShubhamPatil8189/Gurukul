@@ -181,7 +181,6 @@ public class AddCourseActivity extends AppCompatActivity {
     interface OnTeacherUidFetched {
         void onFetched(String teacherUid);
     }
-
     interface OnOrganizationIdFetched {
         void onFetched(String orgId);
     }

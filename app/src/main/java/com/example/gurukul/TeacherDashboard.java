@@ -1,12 +1,15 @@
 package com.example.gurukul;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.widget.LinearLayout;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +23,9 @@ import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,16 +35,16 @@ public class TeacherDashboard extends AppCompatActivity {
     private OrganizationAdapter organizationAdapter;
     private LinearLayoutManager layoutManager;
 
-    // Made static for access from adapter
     private static Handler autoScrollHandler;
     private static Runnable autoScrollRunnable;
 
     private int currentPosition = 0;
 
-    // For page indicators
     private LinearLayout pageIndicatorsLayout;
     private ImageView[] indicators;
-    private int scrollSpeed = 1500; // 1.5s + 0.5s delay
+    private int scrollSpeed = 1500;
+
+    Button btnAddOrg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,19 +58,98 @@ public class TeacherDashboard extends AppCompatActivity {
             return insets;
         });
 
-        // Initialize the page indicators layout
         pageIndicatorsLayout = findViewById(R.id.pageIndicatorsLayout);
+        organizationsRecyclerView = findViewById(R.id.organizationsRecyclerView);
+        btnAddOrg=findViewById(R.id.btnAddOrg);
+        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        organizationsRecyclerView.setLayoutManager(layoutManager);
 
-        setupOrganizationsRecyclerView();
-        setupPageIndicators();
+        SnapHelper snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(organizationsRecyclerView);
+
+        fetchOrganizationsFromFirestore();
         setupAutoScroll();
+
+        btnAddOrg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent= new Intent(TeacherDashboard.this,AddOrganizationActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void fetchOrganizationsFromFirestore() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("organizations")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Organization> organizations = new ArrayList<>();
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        String id = doc.getId();
+                        String title = doc.getString("title"); // ✅ Corrected from 'name' to 'title'
+                        String description = doc.getString("description");
+                        String imageUrl = doc.getString("imageUrl"); // ✅ For Glide
+                        organizations.add(new Organization(id, title, description, imageUrl));
+                    }
+
+                    organizationAdapter = new OrganizationAdapter(organizations);
+                    organizationsRecyclerView.setAdapter(organizationAdapter);
+                    setupPageIndicators(organizations.size());
+
+                    organizationsRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                        @Override
+                        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                            super.onScrollStateChanged(recyclerView, newState);
+                            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                                currentPosition = layoutManager.findFirstVisibleItemPosition();
+                                updatePageIndicators(currentPosition);
+                            }
+                        }
+                    });
+
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to fetch organizations: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+    }
+
+
+    private void setupPageIndicators(int count) {
+        indicators = new ImageView[count];
+        pageIndicatorsLayout.removeAllViews();
+
+        for (int i = 0; i < count; i++) {
+            indicators[i] = new ImageView(this);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(8, 0, 8, 0);
+            indicators[i].setLayoutParams(params);
+            indicators[i].setImageDrawable(ContextCompat.getDrawable(this, R.drawable.indicator_inactive));
+            pageIndicatorsLayout.addView(indicators[i]);
+        }
+
+        if (count > 0) {
+            indicators[0].setImageDrawable(ContextCompat.getDrawable(this, R.drawable.indicator_active));
+        }
+    }
+
+    private void updatePageIndicators(int position) {
+        for (int i = 0; i < indicators.length; i++) {
+            indicators[i].setImageDrawable(ContextCompat.getDrawable(this, R.drawable.indicator_inactive));
+        }
+        if (position >= 0 && position < indicators.length) {
+            indicators[position].setImageDrawable(ContextCompat.getDrawable(this, R.drawable.indicator_active));
+        }
     }
 
     private void smoothScrollToPositionWithSpeed(int position, int durationMs) {
         RecyclerView.SmoothScroller smoothScroller = new LinearSmoothScroller(this) {
             @Override
             protected int calculateTimeForScrolling(int dx) {
-                // Slight slowdown
                 return Math.min(durationMs, super.calculateTimeForScrolling(dx));
             }
         };
@@ -72,99 +157,15 @@ public class TeacherDashboard extends AppCompatActivity {
         layoutManager.startSmoothScroll(smoothScroller);
     }
 
-    private void setupOrganizationsRecyclerView() {
-        organizationsRecyclerView = findViewById(R.id.organizationsRecyclerView);
-
-        // Set up horizontal layout manager
-        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        organizationsRecyclerView.setLayoutManager(layoutManager);
-
-        // Apply snap helper for paging effect
-        SnapHelper snapHelper = new PagerSnapHelper();
-        snapHelper.attachToRecyclerView(organizationsRecyclerView);
-
-        // Set adapter with sample data
-        List<Organization> organizations = getSampleOrganizations();
-        organizationAdapter = new OrganizationAdapter(organizations);
-        organizationsRecyclerView.setAdapter(organizationAdapter);
-
-        // Add scroll listener to update page indicators
-        organizationsRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    // Update the current position when scrolling stops
-                    currentPosition = layoutManager.findFirstVisibleItemPosition();
-                    updatePageIndicators(currentPosition);
-                }
-            }
-        });
-    }
-
-    private void setupPageIndicators() {
-        List<Organization> organizations = getSampleOrganizations();
-        indicators = new ImageView[organizations.size()];
-
-        // Clear any existing indicators
-        pageIndicatorsLayout.removeAllViews();
-
-        // Create indicators
-        for (int i = 0; i < indicators.length; i++) {
-            indicators[i] = new ImageView(this);
-
-            // Set indicator size and margins
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.setMargins(8, 0, 8, 0);
-            indicators[i].setLayoutParams(params);
-
-            // Set inactive dot image initially
-            indicators[i].setImageDrawable(ContextCompat.getDrawable(
-                    this, R.drawable.indicator_inactive));
-
-            // Add to layout
-            pageIndicatorsLayout.addView(indicators[i]);
-        }
-
-        // Set the first indicator as active
-        if (indicators.length > 0) {
-            indicators[0].setImageDrawable(ContextCompat.getDrawable(
-                    this, R.drawable.indicator_active));
-        }
-    }
-
-    private void updatePageIndicators(int position) {
-        // Reset all indicators to inactive
-        for (int i = 0; i < indicators.length; i++) {
-            indicators[i].setImageDrawable(ContextCompat.getDrawable(
-                    this, R.drawable.indicator_inactive));
-        }
-
-        // Set the current position indicator to active
-        if (position >= 0 && position < indicators.length) {
-            indicators[position].setImageDrawable(ContextCompat.getDrawable(
-                    this, R.drawable.indicator_active));
-        }
-    }
-
     private void setupAutoScroll() {
         autoScrollHandler = new Handler(Looper.getMainLooper());
         autoScrollRunnable = new Runnable() {
             @Override
             public void run() {
-                if (organizationAdapter.getItemCount() > 0) {
+                if (organizationAdapter != null && organizationAdapter.getItemCount() > 0) {
                     currentPosition = (currentPosition + 1) % organizationAdapter.getItemCount();
-
-                    // Smooth scroll with slight slowdown
-                    smoothScrollToPositionWithSpeed(currentPosition, 1000); // slight delay
-
-                    // Sync indicator with scroll
-                    autoScrollHandler.postDelayed(() -> {
-                        updatePageIndicators(currentPosition);
-                    }, 700);
-
-                    // Schedule the next scroll after full duration
+                    smoothScrollToPositionWithSpeed(currentPosition, 1000);
+                    autoScrollHandler.postDelayed(() -> updatePageIndicators(currentPosition), 700);
                     autoScrollHandler.postDelayed(this, 2000);
                 }
             }
@@ -174,32 +175,24 @@ public class TeacherDashboard extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Start auto-scrolling when activity is resumed
         autoScrollHandler.postDelayed(autoScrollRunnable, scrollSpeed);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // Stop auto-scrolling when activity is paused
         autoScrollHandler.removeCallbacks(autoScrollRunnable);
     }
 
-    private List<Organization> getSampleOrganizations() {
-        // Create sample data
-        List<Organization> organizations = new ArrayList<>();
-        organizations.add(new Organization("ABC University", "Educational Institution", R.drawable.ic_organization));
-        organizations.add(new Organization("XYZ Research Center", "Research Institute", R.drawable.ic_organization));
-        organizations.add(new Organization("Tech Academy", "Training Institute", R.drawable.ic_organization));
-        organizations.add(new Organization("Science Foundation", "Non-profit Organization", R.drawable.ic_organization));
-        organizations.add(new Organization("Learning Hub", "Educational Platform", R.drawable.ic_organization));
-        return organizations;
-    }
-
-    // 👇 ADDED METHOD TO PAUSE AUTO SCROLLING
     public static void pauseAutoScroll() {
         if (autoScrollHandler != null && autoScrollRunnable != null) {
             autoScrollHandler.removeCallbacks(autoScrollRunnable);
+        }
+    }
+
+    public static void resumeAutoScroll() {
+        if (autoScrollHandler != null && autoScrollRunnable != null) {
+            autoScrollHandler.postDelayed(autoScrollRunnable, 2000);
         }
     }
 }

@@ -1,25 +1,19 @@
 package com.example.gurukul;
-
 public class Organization {
-    private String name;
+    private String uid;
+    private String title;
     private String description;
-    private int imageResId;
+    private String imageUrl;
 
-    public Organization(String name, String description, int imageResId) {
-        this.name = name;
+    public Organization(String uid, String title, String description, String imageUrl) {
+        this.uid = uid;
+        this.title = title;
         this.description = description;
-        this.imageResId = imageResId;
+        this.imageUrl = imageUrl;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public int getImageResId() {
-        return imageResId;
-    }
+    public String getUid() { return uid; }
+    public String getTitle() { return title; }
+    public String getDescription() { return description; }
+    public String getImageUrl() { return imageUrl; }
 }
