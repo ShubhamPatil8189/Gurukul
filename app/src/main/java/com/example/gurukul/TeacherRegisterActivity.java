@@ -3,6 +3,7 @@ package com.example.gurukul;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,6 +21,8 @@ public class TeacherRegisterActivity extends AppCompatActivity {
     private EditText etName, etEmail, etQualification, etExperience, etExpertise, etPassword;
     private Spinner spinnerGender;
     private Button btnRegister;
+
+    TextView tvLogin;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -41,6 +44,16 @@ public class TeacherRegisterActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         spinnerGender = findViewById(R.id.spinnerGender);
         btnRegister = findViewById(R.id.btnRegister);
+        tvLogin=findViewById(R.id.tvLogin);
+
+
+        tvLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(TeacherRegisterActivity.this,LoginActivity.class);
+                startActivity(intent);
+            }
+        });
 
         // Spinner Setup
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -86,9 +99,9 @@ public class TeacherRegisterActivity extends AppCompatActivity {
                             .set(teacher)
                             .addOnSuccessListener(unused -> {
                                 Toast.makeText(this, "Teacher Registered!", Toast.LENGTH_SHORT).show();
+                                Intent intent=new Intent(TeacherRegisterActivity.this,LoginActivity.class);
+                                startActivity(intent);
                                 Log.d(TAG, "Teacher data saved to Firestore.");
-                                startActivity(new Intent(this, MainActivity.class));
-                                finish();
                             })
                             .addOnFailureListener(e -> {
                                 Toast.makeText(this, "Failed to save teacher info", Toast.LENGTH_SHORT).show();

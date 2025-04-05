@@ -229,7 +229,7 @@
 
         <!-- Already Have Account -->
         <TextView
-            android:id="@+id/tvAlreadyHaveAccount"
+            android:id="@+id/tvLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Already have an account? Sign In"

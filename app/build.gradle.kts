@@ -53,12 +53,12 @@ dependencies {
     implementation (platform("com.google.firebase:firebase-bom:32.7.0")) // or latest
 
     implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
-
-    // Add the dependency for the Cloud Storage library
-    // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-storage")
 
     implementation ("com.google.firebase:firebase-storage-ktx:20.3.0")
     implementation ("com.google.firebase:firebase-firestore-ktx:24.8.0")
     implementation ("com.google.android.exoplayer:exoplayer:2.19.1")
+
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 }

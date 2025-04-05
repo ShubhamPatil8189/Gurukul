@@ -40,11 +40,11 @@
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:hint="Username"
-        android:background="@drawable/edit_text_bg"
         android:paddingStart="48dp"
         android:paddingEnd="16dp"
         android:textColor="@color/black"
         android:layout_marginTop="20dp"
+
         android:drawablePadding="10dp"
         app:layout_constraintTop_toBottomOf="@id/tvLoginTitle"
         app:layout_constraintStart_toStartOf="parent"
@@ -58,7 +58,6 @@
         android:layout_height="50dp"
         android:hint="Password"
         android:inputType="textPassword"
-        android:background="@drawable/edit_text_bg"
         android:paddingStart="16dp"
         android:paddingEnd="48dp"
         android:textColor="@color/black"
@@ -75,7 +74,7 @@
         android:id="@+id/spinnerRole"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:background="@drawable/edit_text_bg"
+
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:layout_marginTop="16dp"
@@ -100,15 +99,40 @@
 
     <!-- Sign Up Link -->
     <TextView
-        android:id="@+id/tvSignUp"
+        android:id="@+id/tvmsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Don’t have an account? Sign Up"
+        android:text="Don’t have an account?"
         android:textColor="@color/primary"
         android:textStyle="bold"
         android:layout_marginTop="15dp"
         app:layout_constraintTop_toBottomOf="@id/btnSignIn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/signupTeacher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Sign up as Teacher"
+        android:textColor="@color/primary"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvmsg" />
+
+    <TextView
+        android:id="@+id/signupStudent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Sign up as Student"
+        android:textColor="@color/primary"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/signupTeacher" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

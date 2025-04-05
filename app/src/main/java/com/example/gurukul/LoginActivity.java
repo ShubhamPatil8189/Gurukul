@@ -2,10 +2,12 @@ package com.example.gurukul;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -24,6 +26,8 @@ public class LoginActivity extends AppCompatActivity {
     private Spinner spinnerRole;
     private Button btnSignIn;
 
+    TextView signupStudent,signupTeacher;
+
     private FirebaseAuth auth;
     private FirebaseFirestore db;
 
@@ -37,6 +41,26 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         spinnerRole = findViewById(R.id.spinnerRole);
         btnSignIn = findViewById(R.id.btnSignIn);
+        signupStudent=findViewById(R.id.signupStudent);
+        signupTeacher=findViewById(R.id.signupTeacher);
+
+
+        signupStudent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(LoginActivity.this,RegisterActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
+        signupTeacher.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(LoginActivity.this,TeacherRegisterActivity.class);
+                startActivity(intent);
+            }
+        });
 
         // Firebase setup
         auth = FirebaseAuth.getInstance();
@@ -87,6 +111,8 @@ public class LoginActivity extends AppCompatActivity {
                                             if (selectedRole.equalsIgnoreCase("Student")) {
                                                 Toast.makeText(this, "Student", Toast.LENGTH_SHORT).show();
                                             } else {
+                                                Intent intent1=new Intent(LoginActivity.this,TeacherDashboard.class);
+                                                startActivity(intent1);
                                                 Toast.makeText(this, "Teacher", Toast.LENGTH_SHORT).show();
                                             }
                                         }

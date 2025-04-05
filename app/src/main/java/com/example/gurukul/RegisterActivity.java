@@ -4,10 +4,12 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +29,8 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText etUsername, etEmail, etMobile, etPassword, etDOB;
     private Spinner spinnerGender;
     private Button btnSignUp;
+
+    TextView tvLogin;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -48,6 +52,16 @@ public class RegisterActivity extends AppCompatActivity {
         etDOB = findViewById(R.id.etDOB);
         spinnerGender = findViewById(R.id.spinnerGender);
         btnSignUp = findViewById(R.id.btnSignUp);
+        tvLogin=findViewById(R.id.tvLogin);
+
+        tvLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(RegisterActivity.this,LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         // Gender spinner setup
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -98,7 +112,7 @@ public class RegisterActivity extends AppCompatActivity {
                             .addOnSuccessListener(unused -> {
                                 Toast.makeText(this, "Student Registered!", Toast.LENGTH_SHORT).show();
                                 Log.d(TAG, "Student document created successfully in Firestore.");
-                                Intent intent = new Intent(this, MainActivity.class);
+                                Intent intent=new Intent(RegisterActivity.this,LoginActivity.class);
                                 startActivity(intent);
                             })
                             .addOnFailureListener(e -> {

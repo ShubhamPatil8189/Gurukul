@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:padding="16dp"
+    android:id="@+id/main">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginTop="12.5dp"
+        android:layout_marginBottom="30dp"
+        android:padding="16dp">
+
+        <!-- Profile Image -->
+
+        <!-- Teacher Details -->
+
+        <ImageView
+            android:id="@+id/imgProfile"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/circle_bg"
+            android:scaleType="centerCrop"
+            android:src="@drawable/profile_empty"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/teacherDetails"
+            android:layout_width="0dp"
+            android:layout_marginLeft="6dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintStart_toEndOf="@id/imgProfile"
+            app:layout_constraintTop_toTopOf="@id/imgProfile"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Name: Dr. A. Kumar"
+                android:textColor="@color/black"
+                android:layout_marginTop="2dp"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvQualification"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="Qualification: Ph.D. in CS"
+                android:textSize="17sp"
+                android:textColor="@color/primaryDark" />
+
+            <TextView
+                android:id="@+id/tvExperience"
+                android:layout_width="match_parent"
+                android:layout_marginTop="3dp"
+                android:layout_height="wrap_content"
+                android:text="Experience: 10+ Years"
+                android:textSize="17sp"
+                android:textColor="@color/primaryDark" />
+
+            <TextView
+                android:id="@+id/tvExpertise"
+                android:layout_width="match_parent"
+                android:layout_marginTop="3dp"
+                android:layout_height="wrap_content"
+                android:text="Expertise: AI, ML, Data Science ..................."
+                android:textSize="17sp"
+                android:textColor="@color/primaryDark" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Divider Line -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_gray"
+        android:layout_marginBottom="8dp" />
+
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12.5dp"
+        android:layout_marginBottom="8dp" android:paddingLeft="3dp"
+        android:text="Organizations"
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    />
+
+
+    <!-- Organizations Title -->
+
+
+    <!-- RecyclerView for Organizations -->
+    <!-- Add RecyclerView for sliding organizations -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="5dp"
+        android:id="@+id/organizationsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:orientation="horizontal"
+        android:clipToPadding="false"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp" />
+
+
+    <LinearLayout
+        android:id="@+id/pageIndicatorsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>
