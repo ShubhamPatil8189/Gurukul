@@ -18,23 +18,35 @@
         android:theme="@style/Theme.Gurukul"
         tools:targetApi="31">
         <activity
+            android:name=".StudentProfile"
+            android:exported="false" />
+        <activity
+            android:name=".EditTeacherProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CourseDetails"
+            android:exported="true" />
+        <activity
+            android:name=".OrganizationDetailsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".AddVideoActivity"
+            android:exported="true" />
+        <activity
             android:name=".TeacherDashboard"
-            android:exported="true" >
-
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".AddCourseActivity"
-            android:exported="true" >
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".AddOrganizationActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".LoginActivity"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

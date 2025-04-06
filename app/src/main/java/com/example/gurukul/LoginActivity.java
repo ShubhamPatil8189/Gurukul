@@ -24,9 +24,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText etUsername, etPassword;
     private Spinner spinnerRole;
-    private Button btnSignIn;
+    private Button btnSignIn,btnSignupStudent,btnSignupTeacher;
 
-    TextView signupStudent,signupTeacher;
+
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -41,11 +41,11 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         spinnerRole = findViewById(R.id.spinnerRole);
         btnSignIn = findViewById(R.id.btnSignIn);
-        signupStudent=findViewById(R.id.signupStudent);
-        signupTeacher=findViewById(R.id.signupTeacher);
+        btnSignupStudent=findViewById(R.id.btnSignupStudent);
+        btnSignupTeacher=findViewById(R.id.btnSignupTeacher);
 
 
-        signupStudent.setOnClickListener(new View.OnClickListener() {
+        btnSignupStudent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(LoginActivity.this,RegisterActivity.class);
@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
-        signupTeacher.setOnClickListener(new View.OnClickListener() {
+        btnSignupTeacher.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(LoginActivity.this,TeacherRegisterActivity.class);
@@ -109,6 +109,8 @@ public class LoginActivity extends AppCompatActivity {
                                         Intent intent;
                                         if (selectedRole != null) {
                                             if (selectedRole.equalsIgnoreCase("Student")) {
+                                                Intent intent1=new Intent(LoginActivity.this,StudentProfile.class);
+                                                startActivity(intent1);
                                                 Toast.makeText(this, "Student", Toast.LENGTH_SHORT).show();
                                             } else {
                                                 Intent intent1=new Intent(LoginActivity.this,TeacherDashboard.class);

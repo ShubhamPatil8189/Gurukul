@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:padding="20dp">
+    android:padding="20dp"
+    android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,37 +12,38 @@
         android:orientation="vertical"
         android:gravity="center_horizontal">
 
-        <!-- Title -->
         <TextView
             android:id="@+id/tvAddOrgTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add Organization"
+            android:text="Add Video"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@color/black"
             android:layout_marginBottom="24dp" />
 
-        <!-- Organization Name -->
+
+        <!-- Title Input -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Organization Name"
+            android:hint="Video Title"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_marginBottom="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/orgNameInput"
+                android:id="@+id/titleInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textCapWords" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Description -->
+
+        <!-- Description Input -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Description"
+            android:hint="Video Description"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_marginBottom="16dp">
 
@@ -56,66 +57,63 @@
                 android:inputType="textMultiLine" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Teacher Email 1 -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Teacher Email 1"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_marginBottom="16dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/teacherEmail1Input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Teacher Email 2 -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Teacher Email 2 (Optional)"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_marginBottom="24dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/teacherEmail2Input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Upload Image Label -->
+        <!-- Upload Thumbnail Label -->
         <TextView
-            android:id="@+id/imageUploadBtn"
+            android:id="@+id/uploadThumbnailTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Upload Organization Image"
+            android:text="Upload Thumbnail"
             android:textStyle="bold"
-            android:layout_marginBottom="12dp"
-            android:gravity="start"
-            android:padding="8dp" />
+            android:textSize="16sp"
+            android:textColor="@android:color/holo_blue_dark"
+            android:padding="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_gravity="start"
+            android:background="?android:attr/selectableItemBackground" />
 
-        <!-- Image Preview -->
+        <!-- Thumbnail Preview -->
         <ImageView
-            android:id="@+id/orgImageView"
+            android:id="@+id/thumbnailImageView"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:scaleType="centerCrop"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone" />
+
+        <!-- Upload Video Label -->
+        <TextView
+            android:id="@+id/uploadVideoTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Upload Video"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@android:color/holo_blue_dark"
+            android:padding="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_gravity="start"
+            android:background="?android:attr/selectableItemBackground" />
+
+        <!-- Video Preview -->
+        <androidx.media3.ui.PlayerView
+            android:id="@+id/videoPlayerView"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginBottom="24dp"
             android:visibility="gone"
-            android:layout_marginBottom="24dp" />
+            app:use_controller="true"
+            app:resize_mode="fit" />
 
         <!-- Submit Button -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/addOrgBtn"
+            android:id="@+id/addVideoBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Add Organization"
+            android:text="Add Video"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:backgroundTint="@color/primary"
-            app:cornerRadius="12dp"
-            android:padding="12dp" />
+            android:padding="12dp"
+            app:cornerRadius="12dp" />
     </LinearLayout>
 </ScrollView>

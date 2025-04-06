@@ -4,12 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
-import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,6 +24,8 @@ import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
+import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -44,7 +47,10 @@ public class TeacherDashboard extends AppCompatActivity {
     private ImageView[] indicators;
     private int scrollSpeed = 1500;
 
-    Button btnAddOrg;
+    private Button btnAddOrg, btnEdit, btnLogout;
+
+    private ImageView imgProfile;
+    private TextView tvName, tvQualification, tvExperience, tvExpertise;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,63 +64,153 @@ public class TeacherDashboard extends AppCompatActivity {
             return insets;
         });
 
+        // Profile views
+        imgProfile = findViewById(R.id.imgProfile);
+        tvName = findViewById(R.id.tvName);
+        tvQualification = findViewById(R.id.tvQualification);
+        tvExperience = findViewById(R.id.tvExperience);
+        tvExpertise = findViewById(R.id.tvExpertise);
+        btnEdit = findViewById(R.id.btnEdit);
+        btnLogout = findViewById(R.id.btnLogout);
+        btnAddOrg = findViewById(R.id.btnAddOrg);
+
         pageIndicatorsLayout = findViewById(R.id.pageIndicatorsLayout);
         organizationsRecyclerView = findViewById(R.id.organizationsRecyclerView);
-        btnAddOrg=findViewById(R.id.btnAddOrg);
+
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         organizationsRecyclerView.setLayoutManager(layoutManager);
 
         SnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(organizationsRecyclerView);
 
+        fetchTeacherProfile();
         fetchOrganizationsFromFirestore();
         setupAutoScroll();
 
-        btnAddOrg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent= new Intent(TeacherDashboard.this,AddOrganizationActivity.class);
-                startActivity(intent);
-            }
+        // Add Org
+        btnAddOrg.setOnClickListener(v -> {
+            Intent intent = new Intent(TeacherDashboard.this, AddOrganizationActivity.class);
+            startActivity(intent);
         });
+
+        // Edit Profile
+        btnEdit.setOnClickListener(v -> {
+            Intent intent = new Intent(TeacherDashboard.this, EditTeacherProfileActivity.class);
+            startActivity(intent);
+        });
+
+        // Logout
+        btnLogout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(TeacherDashboard.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        });
+    }
+
+    private void fetchTeacherProfile() {
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        FirebaseFirestore.getInstance()
+                .collection("teachers")
+                .document(uid)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String name = documentSnapshot.getString("name");
+                        String qualification = documentSnapshot.getString("qualification");
+                        String experience = documentSnapshot.getString("experience");
+                        String expertise = documentSnapshot.getString("expertise");
+                        String profileImageUrl = documentSnapshot.getString("profileImageUrl");
+
+                        tvName.setText("Name: " + name);
+                        tvQualification.setText("Qualification: " + qualification);
+                        tvExperience.setText("Experience: " + experience);
+                        tvExpertise.setText("Expertise: " + expertise);
+
+                        if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
+                            Glide.with(this)
+                                    .load(profileImageUrl)
+                                    .placeholder(R.drawable.profile_empty)
+                                    .error(R.drawable.profile_empty)
+                                    .into(imgProfile);
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to load profile: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void fetchOrganizationsFromFirestore() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String currentTeacherId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         db.collection("organizations")
+                .whereArrayContains("teachers", currentTeacherId)
                 .get()
-                .addOnSuccessListener(querySnapshot -> {
+                .addOnSuccessListener(teachersQuery -> {
                     List<Organization> organizations = new ArrayList<>();
-                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+
+                    for (DocumentSnapshot doc : teachersQuery.getDocuments()) {
                         String id = doc.getId();
-                        String title = doc.getString("title"); // ✅ Corrected from 'name' to 'title'
+                        String title = doc.getString("title");
                         String description = doc.getString("description");
-                        String imageUrl = doc.getString("imageUrl"); // ✅ For Glide
-                        organizations.add(new Organization(id, title, description, imageUrl));
+                        String imageUrl = doc.getString("imageUrl");
+                        String ownerId = doc.getString("ownerId");
+
+                        organizations.add(new Organization(id, title, description, imageUrl, ownerId));
                     }
 
-                    organizationAdapter = new OrganizationAdapter(organizations);
-                    organizationsRecyclerView.setAdapter(organizationAdapter);
-                    setupPageIndicators(organizations.size());
+                    db.collection("organizations")
+                            .whereEqualTo("ownerId", currentTeacherId)
+                            .get()
+                            .addOnSuccessListener(ownerQuery -> {
+                                for (DocumentSnapshot doc : ownerQuery.getDocuments()) {
+                                    String id = doc.getId();
 
-                    organizationsRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                        @Override
-                        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                            super.onScrollStateChanged(recyclerView, newState);
-                            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                                currentPosition = layoutManager.findFirstVisibleItemPosition();
-                                updatePageIndicators(currentPosition);
-                            }
-                        }
-                    });
+                                    boolean alreadyAdded = false;
+                                    for (Organization org : organizations) {
+                                        if (org.getUid().equals(id)) {
+                                            alreadyAdded = true;
+                                            break;
+                                        }
+                                    }
 
+                                    if (!alreadyAdded) {
+                                        String title = doc.getString("title");
+                                        String description = doc.getString("description");
+                                        String imageUrl = doc.getString("imageUrl");
+                                        String ownerId = doc.getString("ownerId");
+
+                                        organizations.add(new Organization(id, title, description, imageUrl, ownerId));
+                                    }
+                                }
+
+                                organizationAdapter = new OrganizationAdapter(organizations);
+                                organizationsRecyclerView.setAdapter(organizationAdapter);
+                                setupPageIndicators(organizations.size());
+
+                                organizationsRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                                    @Override
+                                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                                        super.onScrollStateChanged(recyclerView, newState);
+                                        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                                            currentPosition = layoutManager.findFirstVisibleItemPosition();
+                                            updatePageIndicators(currentPosition);
+                                        }
+                                    }
+                                });
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(this, "Failed to fetch owned organizations: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed to fetch organizations: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Failed to fetch organizations: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
-
 
     private void setupPageIndicators(int count) {
         indicators = new ImageView[count];

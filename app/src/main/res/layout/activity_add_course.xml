@@ -106,9 +106,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Upload Course Image"
-            android:textColor="@color/primary"
+            android:textColor="@color/primaryDark"
             android:textStyle="bold"
             android:layout_marginBottom="12dp"
+            android:layout_gravity="start"
             android:padding="8dp" />
 
         <!-- Course Image Preview -->
